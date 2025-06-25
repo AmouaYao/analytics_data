@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Action -->
+    <record id="action_product_stock_coverage_line" model="ir.actions.act_window">
+        <field name="name">Analyse Couverture Stock</field>
+        <field name="res_model">product.stock.coverage.line</field>
+        <field name="view_mode">tree,graph,pivot</field>
+        <field name="search_view_id" ref="view_product_stock_coverage_line_search"/>
+        <field name="help" type="html">
+            <p>Cette vue vous permet d'analyser la couverture de stock sur une période donnée (14 jours).</p>
+        </field>
+    </record>
+
+    <!-- Menu (fait référence à l'action ci-dessus) -->
+    <menuitem
+        id="menu_stock_coverage_analysis"
+        name="Contrôle Spécial"
+        parent="stock.menu_stock_warehouse_mgmt"
+        action="action_product_stock_coverage_line"
+        sequence="99"/>
+
+    <!-- Vues -->
+
+    <record id="view_product_stock_coverage_line_tree" model="ir.ui.view">
+        <field name="name">product.stock.coverage.line.tree</field>
+        <field name="model">product.stock.coverage.line</field>
+        <field name="arch" type="xml">
+            <tree string="Analyse Couverture Stock">
+                <field name="location_id"/>
+                <field name="product_tmpl_id"/>
+                <field name="qty_available_magasin" type="col"/>
+                <field name="qty_total_stock"/>
+                <field name="uom_id"/>
+                <field name="qty_sold_14d"/>
+                <field name="avg_daily_sale"/>
+                <field name="coverage_days"/>
+                <field name="company_id"/>
+                <field name="status" widget="badge" options="{
+                    'class_map': {
+                        'ok': 'bg-success text-white',
+                        'low': 'bg-warning text-dark',
+                        'order': 'bg-secondary text-white',
+                        'out': 'bg-danger text-white'
+                    }
+                }"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_product_stock_coverage_line_graph" model="ir.ui.view">
+        <field name="name">product.stock.coverage.line.graph</field>
+        <field name="model">product.stock.coverage.line</field>
+        <field name="arch" type="xml">
+            <graph string="Graphique Couverture Stock" type="bar">
+                <field name="product_tmpl_id" type="row"/>
+                <field name="qty_available_magasin" type="col"/>
+                <field name="qty_total_stock" type="measure"/>
+                <field name="qty_sold_14d" type="measure"/>
+                <field name="coverage_days" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_product_stock_coverage_line_pivot" model="ir.ui.view">
+        <field name="name">product.stock.coverage.line.pivot</field>
+        <field name="model">product.stock.coverage.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse Couverture Stock">
+                <field name="location_id" type="row"/>
+                <field name="product_tmpl_id" type="row"/>
+                <field name="company_id" type="col"/>
+                <field name="qty_available_magasin" type="col"/>
+                <field name="qty_total_stock" type="measure"/>
+                <field name="qty_sold_14d" type="measure"/>
+                <field name="avg_daily_sale" type="measure"/>
+                <field name="coverage_days" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_product_stock_coverage_line_search" model="ir.ui.view">
+        <field name="name">product.stock.coverage.line.search</field>
+        <field name="model">product.stock.coverage.line</field>
+        <field name="arch" type="xml">
+            <search string="Recherche Couverture Stock">
+                <field name="product_tmpl_id"/>
+                <field name="qty_available_magasin" type="col"/>
+                <field name="location_id"/>
+                <field name="company_id"/>
+                <filter string="Suffisant" name="filter_ok" domain="[('status', '=', 'ok')]"/>
+                <filter string="Seuil alerte" name="filter_low" domain="[('status', '=', 'low')]"/>
+                <filter string="À commander" name="filter_order" domain="[('status', '=', 'order')]"/>
+                <filter string="Plus de stock" name="filter_out" domain="[('status', '=', 'out')]"/>
+            </search>
+        </field>
+    </record>
+
+</odoo>

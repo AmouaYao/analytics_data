@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Menu sous Stock (parent standard Odoo) -->
+    <menuitem
+        id="menu_stock_coverage_analysis"
+        name="Contrôle Spécial"
+        parent="stock.menu_stock_warehouse_mgmt"
+        action="action_product_stock_coverage_line"
+        sequence="99"/>
+
+</odoo>

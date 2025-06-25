@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="ir_cron_archive_stock_coverage" model="ir.cron">
+            <field name="name">Archivage couverture stock (14j)</field>
+            <field name="model_id" ref="model_product_stock_coverage_archive"/>
+            <field name="state">code</field>
+            <field name="code">model.archive_stock_data()</field>
+            <field name="interval_number">14</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>

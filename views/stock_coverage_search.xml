@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<!-- Vue recherche -->
+<record id="view_product_stock_coverage_line_search" model="ir.ui.view">
+    <field name="name">product.stock.coverage.line.search</field>
+    <field name="model">product.stock.coverage.line</field>
+    <field name="arch" type="xml">
+        <search string="Recherche Couverture Stock">
+            <field name="product_tmpl_id"/>
+            <field name="location_id"/>
+            <field name="company_id"/>
+
+            <!-- Filtres Statuts -->
+            <filter string="Suffisant" name="filter_ok" domain="[('status', '=', 'ok')]"/>
+            <filter string="Seuil alerte" name="filter_low" domain="[('status', '=', 'low')]"/>
+            <filter string="À commander" name="filter_order" domain="[('status', '=', 'order')]"/>
+            <filter string="Plus de stock" name="filter_out" domain="[('status', '=', 'out')]"/>
+        </search>
+    </field>
+</record>
+</odoo>
