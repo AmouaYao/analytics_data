@@ -1,5 +1,6 @@
 from odoo import models, fields
 
+
 class ProductStockCoverageLine(models.Model):
     _name = 'product.stock.coverage.line'
     _description = "Analyse Couverture Stock"
@@ -15,13 +16,17 @@ class ProductStockCoverageLine(models.Model):
     qty_sold_14d = fields.Float(string="Ventes/(14j)", readonly=True)
     avg_daily_sale = fields.Float(string="VMJ (14j)", readonly=True)
     coverage_days = fields.Float(string="Couverture (jours)", readonly=True)
-    company_id = fields.Many2one('res.company', string="Société", readonly=True)
+    company_id = fields.Many2one('res.company', string="Société", readonly=True, index=True)
     status = fields.Selection([
         ('ok', 'Suffisant'),
         ('low', 'Seuil d\'alerte'),
         ('order', 'À commander'),
         ('out', 'Rupture de stock'),
     ], string="Statut", readonly=True)
+    storage_type = fields.Selection([
+        ('entrepot', 'Entrepôt'),
+        ('magasin', 'Magasin')
+    ], string="Type de stockage", readonly=True)
 
     def init(self):
         self.env.cr.execute("DROP VIEW IF EXISTS product_stock_coverage_line CASCADE")
@@ -92,48 +97,34 @@ class ProductStockCoverageLine(models.Model):
                     pt.uom_id,
                     sw.company_id,
 
-                    -- Stock magasin
                     COALESCE(sm.qty_magasin, 0) AS qty_available_magasin,
-
-                    -- Stock entrepôt
                     COALESCE(se.qty_entrepot, 0) AS qty_total_stock,
-
-                    -- Ventes sur 14j
                     COALESCE(v14.qty_vendue, 0) AS qty_sold_14d,
 
-                    -- Vente moyenne journalière
                     CASE 
                         WHEN v14.qty_vendue IS NULL THEN NULL
                         ELSE ROUND(v14.qty_vendue / 14.0, 2)
                     END AS avg_daily_sale,
 
-                    -- Couverture
                     CASE 
                         WHEN v14.qty_vendue IS NULL OR v14.qty_vendue = 0 THEN NULL
                         ELSE ROUND(COALESCE(sm.qty_magasin, 0) / NULLIF(v14.qty_vendue / 14.0, 0), 2)
                     END AS coverage_days,
 
-                    -- Statut intelligent
                     CASE
-                        -- Cas 1 : magasin vide mais entrepôt a du stock
                         WHEN COALESCE(sm.qty_magasin, 0) = 0 AND COALESCE(se.qty_entrepot, 0) > 0 THEN 'order'
-
-                        -- Cas 2 : stock en magasin mais pas de vente
                         WHEN COALESCE(sm.qty_magasin, 0) > 0 AND (v14.qty_vendue IS NULL OR v14.qty_vendue = 0) THEN 'ok'
-
-                        -- Couverture < 7 jours
                         WHEN v14.qty_vendue IS NOT NULL AND (COALESCE(sm.qty_magasin, 0) / NULLIF(v14.qty_vendue / 14.0, 0)) < 7 THEN 'low'
-
-                        -- Couverture < 14 jours
                         WHEN v14.qty_vendue IS NOT NULL AND (COALESCE(sm.qty_magasin, 0) / NULLIF(v14.qty_vendue / 14.0, 0)) < 14 THEN 'order'
-
-                        -- Aucun stock nulle part
                         WHEN COALESCE(sm.qty_magasin, 0) = 0 AND COALESCE(se.qty_entrepot, 0) = 0 THEN 'out'
-
                         ELSE 'ok'
                     END AS status,
 
-                    -- Dernière vente
+                    CASE
+                        WHEN sl.complete_name LIKE 'WH/Stock%' THEN 'entrepot'
+                        ELSE 'magasin'
+                    END AS storage_type,
+
                     dv.last_sale_date
 
                 FROM product_template pt
@@ -151,6 +142,7 @@ class ProductStockCoverageLine(models.Model):
 
                 GROUP BY 
                     pt.id, sw.id, sl.id, pt.uom_id, sw.company_id,
-                    se.qty_entrepot, sm.qty_magasin, v14.qty_vendue, dv.last_sale_date
+                    se.qty_entrepot, sm.qty_magasin, v14.qty_vendue, dv.last_sale_date,
+                    sl.complete_name
             )
         """)

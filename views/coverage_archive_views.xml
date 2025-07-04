@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="view_coverage_archive_tree" model="ir.ui.view">
+    <field name="name">product.stock.coverage.archive.tree</field>
+    <field name="model">product.stock.coverage.archive</field>
+    <field name="arch" type="xml">
+      <tree string="Archives Couverture Stock">
+        <field name="archived_date"/>
+        <field name="product_tmpl_id"/>
+        <field name="warehouse_id"/>
+        <field name="company_id"/>
+        <field name="qty_available_magasin"/>
+        <field name="qty_total_stock"/>
+        <field name="qty_sold_14d"/>
+        <field name="avg_daily_sale"/>
+        <field name="coverage_days"/>
+        <field name="status"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="action_coverage_archive" model="ir.actions.act_window">
+    <field name="name">Archives Couverture</field>
+    <field name="res_model">product.stock.coverage.archive</field>
+    <field name="view_mode">tree</field>
+  </record>
+
+  <menuitem id="menu_coverage_root" name="Stock Couverture" parent="stock.menu_stock_root" sequence="10"/>
+
+  <menuitem id="menu_coverage_archive" name="Archives" parent="menu_coverage_root" action="action_coverage_archive" sequence="1"/>
+</odoo>

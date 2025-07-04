@@ -6,9 +6,11 @@
     'author': 'TonNom',
     'depends': ['product', 'stock', 'sale'],
     'data': [
+        'security/ir.model.access.csv',
         'data/coverage_cron.xml',
         'views/analyses_coverage_views.xml',
-        'security/ir.model.access.csv',
+        'views/coverage_archive_views.xml',
+
     ],
     'installable': True,
     'application': False,

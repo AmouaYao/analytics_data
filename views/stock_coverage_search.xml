@@ -10,11 +10,12 @@
             <field name="location_id"/>
             <field name="company_id"/>
 
-            <!-- Filtres Statuts -->
-            <filter string="Suffisant" name="filter_ok" domain="[('status', '=', 'ok')]"/>
-            <filter string="Seuil alerte" name="filter_low" domain="[('status', '=', 'low')]"/>
-            <filter string="À commander" name="filter_order" domain="[('status', '=', 'order')]"/>
-            <filter string="Plus de stock" name="filter_out" domain="[('status', '=', 'out')]"/>
+            <group string="Statut de stock">
+                <filter string="Suffisant" name="filter_ok" domain="[('status', '=', 'ok')]"/>
+                <filter string="Seuil alerte" name="filter_low" domain="[('status', '=', 'low')]"/>
+                <filter string="À commander" name="filter_order" domain="[('status', '=', 'order')]"/>
+                <filter string="Plus de stock" name="filter_out" domain="[('status', '=', 'out')]"/>
+            </group>
         </search>
     </field>
 </record>

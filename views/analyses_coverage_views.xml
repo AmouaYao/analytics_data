@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
+    <!-- Vue de recherche - DOIT VENIR EN PREMIER -->
+    <record id="view_product_stock_coverage_line_search" model="ir.ui.view">
+        <field name="name">product.stock.coverage.line.search</field>
+        <field name="model">product.stock.coverage.line</field>
+        <field name="arch" type="xml">
+            <search string="Recherche Couverture Stock">
+                <field name="product_tmpl_id"/>
+                <field name="warehouse_id"/>
+                <field name="qty_available_magasin" type="col"/>
+                <field name="location_id"/>
+                <field name="company_id"/>
+                <filter name="filter_magasin" string="Magasins" domain="[('storage_type','=','magasin')]"/>
+                <filter name="filter_entrepot" string="Entrepôts" domain="[('storage_type','=','entrepot')]"/>
+                <filter string="Suffisant" name="filter_ok" domain="[('status', '=', 'ok')]"/>
+                <filter string="Seuil alerte" name="filter_low" domain="[('status', '=', 'low')]"/>
+                <filter string="À commander" name="filter_order" domain="[('status', '=', 'order')]"/>
+                <filter string="Plus de stock" name="filter_out" domain="[('status', '=', 'out')]"/>
+            </search>
+        </field>
+    </record>
+
     <!-- Action -->
     <record id="action_product_stock_coverage_line" model="ir.actions.act_window">
         <field name="name">Analyse Couverture Stock</field>
@@ -21,7 +42,6 @@
         sequence="99"/>
 
     <!-- Vues -->
-
     <record id="view_product_stock_coverage_line_tree" model="ir.ui.view">
         <field name="name">product.stock.coverage.line.tree</field>
         <field name="model">product.stock.coverage.line</field>
@@ -76,23 +96,6 @@
                 <field name="avg_daily_sale" type="measure"/>
                 <field name="coverage_days" type="measure"/>
             </pivot>
-        </field>
-    </record>
-
-    <record id="view_product_stock_coverage_line_search" model="ir.ui.view">
-        <field name="name">product.stock.coverage.line.search</field>
-        <field name="model">product.stock.coverage.line</field>
-        <field name="arch" type="xml">
-            <search string="Recherche Couverture Stock">
-                <field name="product_tmpl_id"/>
-                <field name="qty_available_magasin" type="col"/>
-                <field name="location_id"/>
-                <field name="company_id"/>
-                <filter string="Suffisant" name="filter_ok" domain="[('status', '=', 'ok')]"/>
-                <filter string="Seuil alerte" name="filter_low" domain="[('status', '=', 'low')]"/>
-                <filter string="À commander" name="filter_order" domain="[('status', '=', 'order')]"/>
-                <filter string="Plus de stock" name="filter_out" domain="[('status', '=', 'out')]"/>
-            </search>
         </field>
     </record>
 
